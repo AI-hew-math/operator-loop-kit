@@ -6,6 +6,14 @@ A small, self-contained kit to bootstrap the "Claude run -> Codex review/approve
 
 ### 1) Install Into An Existing Repo
 
+## Policy (P1)
+
+- operator-loop-kit(infra): Codex는 "커밋까지만" 수행하고, push는 Claude만 한다.
+- 연구 레포(.rev/.dev): Codex는 리뷰/승인/머지/푸시를 할 수 있으나, Codex가 직접 코드를 수정하는 것은 금지.
+- 변경 범위가 예상 밖이면 whitelist guard가 BLOCKED로 차단하며, 이 경우 REQUEST_CHANGES로 중단한다.
+
+자세한 내용: `POLICY_P1.md`
+
 ```bash
 # from this repo
 bash ./install.sh /path/to/your/repo
