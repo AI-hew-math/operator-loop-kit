@@ -20,7 +20,7 @@ RUN_ID=$(TEST_CMD="make test" ./scripts/ai_pack.sh | tail -n 1)
 git add -A
 git status -sb
 git commit -m "run: ${RUN_ID}"
-./scripts/guard_block_template_remote.sh
+./scripts/guard_block_template_remote.sh || { echo "REQUEST_CHANGES"; echo "Do NOT push to template origin"; exit 1; }
 git push origin ai/claude || git push --force-with-lease origin ai/claude
 
 마지막 줄: READY_FOR_CODEX
