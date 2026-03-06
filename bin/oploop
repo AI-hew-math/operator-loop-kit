@@ -5,6 +5,7 @@ usage() {
   cat <<'USAGE'
 Usage:
   oploop clone <git_url> <name> [base_dir]
+  oploop -h|--help
 
 Defaults:
   base_dir: "$HOME/OneDrive - postech.ac.kr/Claude_projects/projects"
@@ -12,14 +13,15 @@ Defaults:
 Behavior:
   - clones into <base_dir>/<name>.rev
   - adds a worktree <base_dir>/<name>.dev on branch ai/claude from origin/main
+    - fallback: origin/HEAD if origin/main is missing
   - runs this kit's install.sh against the .rev repo
 USAGE
 }
 
 cmd="${1:-}"
-if [ -z "$cmd" ]; then
+if [ -z "$cmd" ] || [ "$cmd" = "-h" ] || [ "$cmd" = "--help" ]; then
   usage
-  exit 2
+  exit 0
 fi
 shift || true
 
@@ -59,11 +61,14 @@ case "$cmd" in
 
     git clone "$git_url" "$rev_dir"
 
-    # In the .rev repo, add a sibling worktree for .dev.
-    (
-      cd "$rev_dir"
-      git worktree add -B ai/claude "../${name}.dev" origin/main
-    )
+    # Determine base ref for the worktree.
+    base_ref="origin/main"
+    if ! git -C "$rev_dir" rev-parse --verify -q "$base_ref" >/dev/null; then
+      base_ref="origin/HEAD"
+    fi
+
+    # Add a sibling worktree for .dev.
+    git -C "$rev_dir" worktree add -B ai/claude "$dev_dir" "$base_ref"
 
     # Install operator loop assets into the .rev repo using this kit's install.sh.
     bash "$install_sh" "$rev_dir"

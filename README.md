@@ -4,7 +4,7 @@ A small, self-contained kit to bootstrap the "Claude run -> Codex review/approve
 
 ## Quickstart
 
-### Install Into An Existing Repo
+### 1) Install Into An Existing Repo
 
 ```bash
 # from this repo
@@ -14,7 +14,7 @@ bash ./install.sh /path/to/your/repo
 bash /path/to/operator-loop-kit/install.sh .
 ```
 
-### Clone A .rev/.dev Pair
+### 2) Clone A .rev/.dev Pair
 
 ```bash
 ./bin/oploop clone <git_url> <name> [base_dir]
