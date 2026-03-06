@@ -78,7 +78,11 @@ case "$cmd" in
     fi
 
     if git -C "$rev_dir" remote get-url origin >/dev/null 2>&1; then
-      git -C "$rev_dir" push origin main || echo "WARN: push failed (likely no permission). Continue."
+      if git -C "$rev_dir" scripts/guard_block_template_remote.sh; then
+        git -C "$rev_dir" push origin main || echo "WARN: push failed (likely no permission). Continue."
+      else
+        echo "WARN: template origin detected; skipping push"
+      fi
     fi
 
     if ! git -C "$rev_dir" rev-parse --verify -q main >/dev/null; then

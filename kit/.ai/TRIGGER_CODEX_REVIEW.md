@@ -46,9 +46,11 @@ git push origin ai/claude
 
 9) main 머지 + gate 확인 + push
 git checkout main
+./scripts/guard_block_template_remote.sh || { echo "REQUEST_CHANGES"; echo "Do NOT merge/push to template origin"; exit 1; }
 git merge --no-ff ai/claude
 ./scripts/ai_gate.sh  # OK 아니면 즉시 중단: origin/main push 금지
 ./scripts/ai_gate.sh || { echo "BLOCKED"; exit 1; }
+./scripts/guard_block_template_remote.sh || { echo "REQUEST_CHANGES"; echo "Do NOT merge/push to template origin"; exit 1; }
 git push origin main
 
 10) 다음 사이클 준비

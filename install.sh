@@ -98,12 +98,14 @@ main() {
   copy_always "$KIT_SRC/scripts/ai_pack.sh" "$TARGET_DIR/scripts/ai_pack.sh"
   copy_always "$KIT_SRC/scripts/ai_gate.sh" "$TARGET_DIR/scripts/ai_gate.sh"
   copy_always "$KIT_SRC/scripts/test.sh" "$TARGET_DIR/scripts/test.sh"
+  copy_always "$KIT_SRC/scripts/guard_block_template_remote.sh" "$TARGET_DIR/scripts/guard_block_template_remote.sh"
   # d-1) Codex review guard (installed under scripts/ so triggers can always run it)
   if [ -f "$KIT_SRC/scripts/guard_codex_whitelist.sh" ]; then
     copy_always "$KIT_SRC/scripts/guard_codex_whitelist.sh" "$TARGET_DIR/scripts/guard_codex_whitelist.sh"
   fi
   # e) chmod
   chmod +x "$TARGET_DIR/scripts"/*.sh
+  chmod +x "$TARGET_DIR/scripts/guard_block_template_remote.sh"
   if [ -f "$TARGET_DIR/scripts/guard_codex_whitelist.sh" ]; then
     chmod +x "$TARGET_DIR/scripts/guard_codex_whitelist.sh"
   fi
