@@ -37,6 +37,9 @@ Any change outside this list is treated as **unexpected scope**.
 
 ## Enforcement
 
+- Purpose: the guard prevents Codex from accidentally mixing arbitrary code changes into main during review/merge.
+- Claude implementation changes are normal; the guard only blocks policy violations right before approve/merge.
+
 - `kit/scripts/guard_codex_whitelist.sh` must be run before merge/push.
 - If the guard reports `BLOCKED`, treat the run as `REQUEST_CHANGES`.
 - Do not approve/merge/push until the change set is brought back into the allowed scope.

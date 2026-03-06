@@ -98,14 +98,15 @@ main() {
   copy_always "$KIT_SRC/scripts/ai_pack.sh" "$TARGET_DIR/scripts/ai_pack.sh"
   copy_always "$KIT_SRC/scripts/ai_gate.sh" "$TARGET_DIR/scripts/ai_gate.sh"
   copy_always "$KIT_SRC/scripts/test.sh" "$TARGET_DIR/scripts/test.sh"
-
-  # d-1) Codex review guard (installed under kit/scripts to match trigger docs)
-  ensure_dir "$TARGET_DIR/kit/scripts"
-  copy_always "$KIT_SRC/scripts/guard_codex_whitelist.sh" "$TARGET_DIR/kit/scripts/guard_codex_whitelist.sh"
-
+  # d-1) Codex review guard (installed under scripts/ so triggers can always run it)
+  if [ -f "$KIT_SRC/scripts/guard_codex_whitelist.sh" ]; then
+    copy_always "$KIT_SRC/scripts/guard_codex_whitelist.sh" "$TARGET_DIR/scripts/guard_codex_whitelist.sh"
+  fi
   # e) chmod
   chmod +x "$TARGET_DIR/scripts"/*.sh
-  chmod +x "$TARGET_DIR/kit/scripts"/*.sh
+  if [ -f "$TARGET_DIR/scripts/guard_codex_whitelist.sh" ]; then
+    chmod +x "$TARGET_DIR/scripts/guard_codex_whitelist.sh"
+  fi
 
   # f) .gitignore lines
   append_gitignore_line '.ai/packets/' "$TARGET_DIR/.gitignore"

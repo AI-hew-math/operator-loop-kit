@@ -19,10 +19,10 @@ transcript 요약(의도/명령/출력/편차)을 3~6줄로 정리
 
 5) (필수) Whitelist guard
 main merge 전에 반드시 다음을 실행:
-kit/scripts/guard_codex_whitelist.sh origin/main ai/claude
+scripts/guard_codex_whitelist.sh origin/main ai/claude
 
-guard 실패 시: 승인/merge/push 금지. REQUEST_CHANGES 출력하고 즉시 종료:
-kit/scripts/guard_codex_whitelist.sh origin/main ai/claude || { echo "REQUEST_CHANGES"; exit 1; }
+guard 실패 시: 승인/merge/push 금지(절대 진행 금지). REQUEST_CHANGES 출력 후 즉시 종료:
+scripts/guard_codex_whitelist.sh origin/main ai/claude || { echo "REQUEST_CHANGES"; echo "Do NOT approve/merge/push"; exit 1; }
 
 6) 재현 실행(필수)
 make test; echo EXIT=$?
