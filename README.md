@@ -33,6 +33,8 @@ This creates:
 - `<base_dir>/<name>.rev`
 - `<base_dir>/<name>.dev` (worktree on `ai/claude`)
 
+`oploop clone` runs `install.sh` and creates a one-time baseline commit in `<name>.rev` (`chore: baseline operator-loop install`) when install produced changes. It then attempts `git push origin main`; if you do not have permission on the source repository, push can fail and `oploop` will continue with a warning. In that case, use your own repository (for example, create a new repo from template and clone that) for ongoing work.
+
 ## Contents
 
 - `install.sh`: installs the operator loop files into an existing repo (idempotent, backs up overwritten files with `.bak`).

@@ -14,15 +14,18 @@ RUN_ID=$(cat .ai/LAST_RUN_ID | tr -d '[:space:]')
 test -f .ai/transcripts/claude_${RUN_ID}.md && test -s .ai/transcripts/claude_${RUN_ID}.md
 
 4) 리뷰 근거 수집
-git diff origin/main...ai/claude
+BASE_REF="origin/main"; git rev-parse --verify "$BASE_REF" >/dev/null 2>&1 || BASE_REF="main"
+git diff ${BASE_REF}...ai/claude
 transcript 요약(의도/명령/출력/편차)을 3~6줄로 정리
 
 5) (필수) Whitelist guard
 main merge 전에 반드시 다음을 실행:
-scripts/guard_codex_whitelist.sh origin/main ai/claude
+BASE_REF="origin/main"; git rev-parse --verify "$BASE_REF" >/dev/null 2>&1 || BASE_REF="main"
+scripts/guard_codex_whitelist.sh "$BASE_REF" ai/claude
 
 guard 실패 시: 승인/merge/push 금지(절대 진행 금지). REQUEST_CHANGES 출력 후 즉시 종료:
-scripts/guard_codex_whitelist.sh origin/main ai/claude || { echo "REQUEST_CHANGES"; echo "Do NOT approve/merge/push"; exit 1; }
+BASE_REF="origin/main"; git rev-parse --verify "$BASE_REF" >/dev/null 2>&1 || BASE_REF="main"
+scripts/guard_codex_whitelist.sh "$BASE_REF" ai/claude || { echo "REQUEST_CHANGES"; echo "Do NOT approve/merge/push"; exit 1; }
 
 6) 재현 실행(필수)
 make test; echo EXIT=$?
@@ -32,7 +35,7 @@ make test; echo EXIT=$?
 - verdict: APPROVE
 - run_id: ${RUN_ID}
 - reviewed_commit: <ai/claude HEAD SHA>
-- base: <origin/main SHA>
+- base: <BASE_REF SHA>
 - commands_run: make test (EXIT + 실제 출력 핵심 1~3줄)
 - notes: 근거 1~3줄
 

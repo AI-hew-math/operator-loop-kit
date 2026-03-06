@@ -12,9 +12,10 @@ Defaults:
 
 Behavior:
   - clones into <base_dir>/<name>.rev
-  - adds a worktree <base_dir>/<name>.dev on branch ai/claude from origin/main
-    - fallback: origin/HEAD if origin/main is missing
   - runs this kit's install.sh against the .rev repo
+  - creates baseline commit once if install produced changes
+  - attempts push to origin/main (warns and continues on failure)
+  - adds a worktree <base_dir>/<name>.dev on branch ai/claude from local main
 USAGE
 }
 
@@ -61,17 +62,32 @@ case "$cmd" in
 
     git clone "$git_url" "$rev_dir"
 
-    # Determine base ref for the worktree.
-    base_ref="origin/main"
-    if ! git -C "$rev_dir" rev-parse --verify -q "$base_ref" >/dev/null; then
-      base_ref="origin/HEAD"
-    fi
-
-    # Add a sibling worktree for .dev.
-    git -C "$rev_dir" worktree add -B ai/claude "$dev_dir" "$base_ref"
-
     # Install operator loop assets into the .rev repo using this kit's install.sh.
     bash "$install_sh" "$rev_dir"
+
+    baseline_msg="chore: baseline operator-loop install"
+    if [ -n "$(git -C "$rev_dir" status --porcelain)" ]; then
+      if git -C "$rev_dir" log --format=%s --all | grep -Fxq "$baseline_msg"; then
+        echo "INFO: baseline commit already exists; skipping auto-commit."
+      else
+        git -C "$rev_dir" add -A
+        git -C "$rev_dir" commit -m "$baseline_msg"
+      fi
+    else
+      echo "INFO: no install changes; skipping baseline commit."
+    fi
+
+    if git -C "$rev_dir" remote get-url origin >/dev/null 2>&1; then
+      git -C "$rev_dir" push origin main || echo "WARN: push failed (likely no permission). Continue."
+    fi
+
+    if ! git -C "$rev_dir" rev-parse --verify -q main >/dev/null; then
+      echo "ERROR: local branch 'main' not found in $rev_dir" >&2
+      exit 1
+    fi
+
+    # Add a sibling worktree for .dev from local main so it works even if push fails.
+    git -C "$rev_dir" worktree add -B ai/claude "$dev_dir" main
 
     echo "REV=${rev_dir}"
     echo "DEV=${dev_dir}"
