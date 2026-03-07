@@ -37,6 +37,7 @@ This creates:
 Do not push to the template repository (`AI-hew-math/research-template`).
 Always create a new repository from that template, then run `oploop clone` with your new repository URL.
 The system runs `scripts/guard_block_template_remote.sh` and blocks pushes automatically when template origin is detected.
+Both Claude and Codex triggers run the template-origin guard before any push.
 
 ## Contents
 
